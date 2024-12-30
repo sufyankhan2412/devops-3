@@ -112,7 +112,7 @@ Following are the major dev-dependencies of the project:
    npm run dev
    ```
 
-4. Go to http://localhost:3000
+4. Go to https://taskmanagermernwebapp.netlify.app/
 
 ## Backend API
 
