@@ -18,7 +18,7 @@
     "Task manager",
     "Full stack application"
   ],
-  "author": "Aayush",
+  "author": "Sanket",
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^7.1.0"
