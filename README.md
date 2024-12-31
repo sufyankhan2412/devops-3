@@ -113,6 +113,7 @@ Following are the major dev-dependencies of the project:
    ```
 
 4. Go to https://taskmanagermernwebapp.netlify.app/
+5. also proxy port http://localhost:3001/
 
 ## Backend API
 
