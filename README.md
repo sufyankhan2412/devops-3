@@ -191,4 +191,4 @@ Inside backend folder:
 ## Contact
 
 - Email: sanketdesai1971@gmail.com
-- Linkedin: linkedin.com/in/sanket-desai-
+- Linkedin: https://www.linkedin.com/in/sanket-desai-
