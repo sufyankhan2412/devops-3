@@ -1,0 +1,71 @@
+# docker-compose.test.yml
+version: '3.8'
+
+services:
+  # Selenium Chrome service
+  selenium-chrome:
+    image: selenium/standalone-chrome:4.15.0-20231129
+    container_name: selenium-chrome
+    shm_size: 2gb
+    ports:
+      - "4444:4444"
+      - "7900:7900"  # VNC port for viewing tests
+    environment:
+      - SE_OPTS=--session-timeout 300
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - test-network
+
+  # Your React app (adjust based on your setup)
+  web-app:
+    build:
+      context: ..  # Assuming this is in a selenium-tests subfolder
+      dockerfile: Dockerfile
+    container_name: task-manager-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      - MONGO_URI=mongodb://mongo:27017/taskmanager
+      - JWT_SECRET=your-jwt-secret
+
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Test runner service
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: selenium-test-runner
+    depends_on:
+      web-app:
+        condition: service_healthy
+      selenium-chrome:
+        condition: service_started
+    environment:
+      - SELENIUM_HUB_URL=http://selenium-chrome:4444
+      - APP_URL=http://web-app:3000
+      - PYTHONPATH=/app
+    volumes:
+      - ./test-results:/app/test-results
+      - ./screenshots:/app/screenshots
+    networks:
+      - test-network
+    command: >
+      sh -c "
+        echo 'Waiting for services to be ready...' &&
+        sleep 10 &&
+        python -m pytest test_cases.py -v --html=test-results/report.html --self-contained-html
+      "
+
+networks:
+  test-network:
+    driver: bridge

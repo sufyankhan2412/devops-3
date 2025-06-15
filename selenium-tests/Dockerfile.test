@@ -1,0 +1,27 @@
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.test.txt .
+RUN pip install --no-cache-dir -r requirements.test.txt
+
+# Create directories for test outputs
+RUN mkdir -p test-results screenshots
+
+# Copy test files
+COPY test_cases.py .
+COPY conftest.py .
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV SELENIUM_HUB_URL=http://selenium-chrome:4444
+ENV APP_URL=http://web-app:3000
+
+CMD ["python", "-m", "pytest", "test_cases.py", "-v"]
